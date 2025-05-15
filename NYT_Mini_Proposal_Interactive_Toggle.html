@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Crossword</title>
+    <style>
+        body {
+            margin: 0;
+            background: #fff;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 40px);
+            gap: 1px;
+            margin-top: 30px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            box-sizing: border-box;
+            border: 1px solid #000;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .black {
+            background: black;
+        }
+        .cell input {
+            border: none;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            background: transparent;
+        }
+        .cell:focus-within {
+            outline: 2px solid #4285f4;
+        }
+        .cell.highlight {
+            background-color: #d0e3ff !important;
+        }
+        .clue-box {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid" id="grid">
+<div class="cell white" data-clues="Last ___ and testament,State abbreviation where you might find Yellowstone"><input type="text" maxlength="1"></div><div class="cell white" data-clues="Last ___ and testament,Jupiter's innermost moon"><input type="text" maxlength="1"></div><div class="cell white" data-clues="Last ___ and testament,They make watches glow"><input type="text" maxlength="1"></div><div class="cell white" data-clues="Last ___ and testament"><input type="text" maxlength="1"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell white" data-clues="Netflix thriller starring Penn Badgley,State abbreviation where you might find Yellowstone"><input type="text" maxlength="1"></div><div class="cell white" data-clues="Netflix thriller starring Penn Badgley,Jupiter's innermost moon"><input type="text" maxlength="1"></div><div class="cell white" data-clues="Netflix thriller starring Penn Badgley,They make watches glow"><input type="text" maxlength="1"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell white" data-clues="To tie the knot,They make watches glow"><input type="text" maxlength="1"></div><div class="cell white" data-clues="To tie the knot"><input type="text" maxlength="1"></div><div class="cell white" data-clues="To tie the knot"><input type="text" maxlength="1"></div><div class="cell white" data-clues="To tie the knot"><input type="text" maxlength="1"></div><div class="cell white" data-clues="To tie the knot"><input type="text" maxlength="1"></div><div class="cell black"></div><div class="cell white" data-clues="Just 2 letters - and the happiest person"><input type="text" maxlength="1"></div><div class="cell white" data-clues="Just 2 letters - and the happiest person,They make watches glow"><input type="text" maxlength="1"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell white" data-clues="The name I love to say,They make watches glow"><input type="text" maxlength="1"></div><div class="cell white" data-clues="The name I love to say"><input type="text" maxlength="1"></div><div class="cell white" data-clues="The name I love to say"><input type="text" maxlength="1"></div><div class="cell white" data-clues="The name I love to say"><input type="text" maxlength="1"></div><div class="cell white" data-clues="The name I love to say"><input type="text" maxlength="1"></div>
+    </div>
+    <div class="clue-box" id="clue-box">Click a cell to see the clue</div>
+    <script>
+        const cells = document.querySelectorAll('.cell.white');
+        const clueBox = document.getElementById('clue-box');
+        let lastClueIndex = {};
+
+        function clearHighlights() {
+            cells.forEach(cell => cell.classList.remove('highlight'));
+        }
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const clues = cell.getAttribute('data-clues');
+                if (!clues) return;
+
+                const clueList = clues.split(',');
+                const key = cell; // use cell reference as key
+                if (!(key in lastClueIndex)) lastClueIndex[key] = 0;
+
+                const currentClue = clueList[lastClueIndex[key]];
+                clueBox.textContent = currentClue;
+
+                clearHighlights();
+                document.querySelectorAll(`[data-clues*="${currentClue}"]`).forEach(c => c.classList.add('highlight'));
+            });
+
+            cell.addEventListener('dblclick', () => {
+                const clues = cell.getAttribute('data-clues');
+                if (!clues) return;
+
+                const clueList = clues.split(',');
+                const key = cell;
+                if (!(key in lastClueIndex)) lastClueIndex[key] = 0;
+
+                // toggle clue index
+                lastClueIndex[key] = (lastClueIndex[key] + 1) % clueList.length;
+                const currentClue = clueList[lastClueIndex[key]];
+                clueBox.textContent = currentClue;
+
+                clearHighlights();
+                document.querySelectorAll(`[data-clues*="${currentClue}"]`).forEach(c => c.classList.add('highlight'));
+            });
+        });
+    </script>
+</body>
+</html>
