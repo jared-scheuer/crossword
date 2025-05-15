@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Mini Crossword</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+  <style>
+    body { margin: 0; font-family: Helvetica, sans-serif; display: flex; flex-direction: column; align-items: center; }
+    .grid { display: grid; grid-template-columns: repeat(7, 40px); gap: 1px; margin-top: 30px; }
+    .cell {
+      width: 40px; height: 40px; position: relative;
+      border: 1px solid #000; background: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: bold;
+    }
+    .black { background: black; }
+    .cell input {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      border: none;
+      background: transparent;
+      caret-color: transparent;
+      text-transform: uppercase;
+    }
+    .cell input:focus { outline: none; }
+    .highlight { background-color: #d0e3ff !important; }
+    .clue-box { margin-top: 20px; font-size: 16px; padding: 10px; border-top: 1px solid #ddd; width: 90%; max-width: 300px; text-align: center; }
+    .num-label {
+      position: absolute;
+      top: 1px;
+      left: 2px;
+      font-size: 10px;
+      font-weight: normal;
+    }
+  
+    .active-cell { background-color: #fff7cc !important; }
+    .celebration-message {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: white; color: black; font-size: 28px;
+      display: flex; justify-content: center; align-items: center;
+      flex-direction: column; z-index: 1000; display: none;
+    }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <div class="grid" id="grid">
+<div class="cell white" data-clues="Last ___ and testament,State abbreviation where you might find Yellowstone" data-row="0" data-col="0"><div class="num-label">1</div><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="Last ___ and testament,Jupiter's innermost moon" data-row="0" data-col="1"><div class="num-label">6</div><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="Last ___ and testament,They make watches glow" data-row="0" data-col="2"><div class="num-label">7</div><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="Last ___ and testament" data-row="0" data-col="3"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell white" data-clues="Netflix thriller starring Penn Badgley,State abbreviation where you might find Yellowstone" data-row="1" data-col="0"><div class="num-label">2</div><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="Netflix thriller starring Penn Badgley,Jupiter's innermost moon" data-row="1" data-col="1"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="Netflix thriller starring Penn Badgley,They make watches glow" data-row="1" data-col="2"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell white" data-clues="To tie the knot,They make watches glow" data-row="2" data-col="2"><div class="num-label">3</div><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="To tie the knot" data-row="2" data-col="3"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="To tie the knot" data-row="2" data-col="4"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="To tie the knot" data-row="2" data-col="5"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="To tie the knot" data-row="2" data-col="6"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell black"></div><div class="cell white" data-clues="Just 2 letters - and the happiest person" data-row="3" data-col="1"><div class="num-label">4</div><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="Just 2 letters - and the happiest person,They make watches glow" data-row="3" data-col="2"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell black"></div><div class="cell white" data-clues="The name I love to say,They make watches glow" data-row="4" data-col="2"><div class="num-label">5</div><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="The name I love to say" data-row="4" data-col="3"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="The name I love to say" data-row="4" data-col="4"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="The name I love to say" data-row="4" data-col="5"><input type="text" maxlength="1" onfocus="this.select()" /></div><div class="cell white" data-clues="The name I love to say" data-row="4" data-col="6"><input type="text" maxlength="1" onfocus="this.select()" /></div>
+  </div>
+  <div class="clue-box" id="clue-box">Click a cell to see the clue</div>
+    <div class="celebration-message" id="celebration">
+      🎉 <p>Sammy, will you marry me?</p>
+    </div>
+  <script>
+    const cells = document.querySelectorAll('.cell.white');
+    const clueBox = document.getElementById('clue-box');
+    let currentDirection = 'across';
+    let lastClueIndex = new Map();
+
+    const clueOrder = {
+      across: [
+        "Last ___ and testament",
+        "Netflix thriller starring Penn Badgley",
+        "To tie the knot",
+        "Just 2 letters - and the happiest person",
+        "The name I love to say"
+      ],
+      down: [
+        "State abbreviation where you might find Yellowstone",
+        "Jupiter's innermost moon",
+        "They make watches glow"
+      ]
+    };
+
+    function clearHighlights() {
+      cells.forEach(cell => cell.classList.remove('highlight'));
+    }
+
+    function findNextCell(cell, direction) {
+      const row = parseInt(cell.getAttribute('data-row'));
+      const col = parseInt(cell.getAttribute('data-col'));
+      const nextRow = direction === 'down' ? row + 1 : row;
+      const nextCol = direction === 'across' ? col + 1 : col;
+      return document.querySelector(`.cell.white[data-row="${nextRow}"][data-col="${nextCol}"] input`);
+    }
+
+    function getWordCells(clue) {
+      return Array.from(document.querySelectorAll(`.cell.white[data-clues*="${clue}"]`));
+    }
+
+    function isWordComplete(clue) {
+      return getWordCells(clue).every(cell => {
+        const input = cell.querySelector('input');
+        return input && input.value.trim().length === 1;
+      });
+    }
+
+    function jumpToNextWord(clue, direction) {
+      const clueList = clueOrder[direction];
+      const currentIndex = clueList.indexOf(clue);
+      const nextIndex = (currentIndex + 1) % clueList.length;
+      const nextClue = clueList[nextIndex];
+      const nextStart = document.querySelector(`.cell.white[data-clues*="${nextClue}"] input`);
+      if (nextStart) {
+        nextStart.focus(); highlightActiveCell(nextStart.parentElement);
+        const cell = nextStart.parentElement;
+        clueBox.textContent = nextClue;
+        clearHighlights();
+        getWordCells(nextClue).forEach(c => c.classList.add('highlight'));
+      }
+    }
+
+    
+    function highlightActiveCell(cell) {
+      cells.forEach(c => c.classList.remove('active-cell'));
+      if (cell) cell.classList.add('active-cell');
+    }
+
+
+    function checkFullCompletion() {
+      const allFilled = Array.from(document.querySelectorAll('.cell.white input'))
+        .every(input => input.value.trim().length === 1);
+      if (allFilled) {
+        const celebration = document.getElementById('celebration');
+        celebration.style.display = 'flex';
+        confetti(); // trigger confetti animation
+      }
+    }
+
+    function confetti() {
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 2000 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confettiLib({
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          ...defaults
+        });
+        confettiLib({
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+          ...defaults
+        });
+      }, 250);
+    }
+
+
+cells.forEach(cell => {
+      const input = cell.querySelector('input');
+
+      cell.addEventListener('click', () => {
+        input.focus(); highlightActiveCell(cell);
+        const clues = cell.getAttribute('data-clues');
+        if (!clues) return;
+        const clueList = clues.split(',');
+        if (!lastClueIndex.has(cell)) lastClueIndex.set(cell, 0);
+        const clue = clueList[lastClueIndex.get(cell)];
+        currentDirection = clueList.length > 1 ? currentDirection : 'across';
+        clueBox.textContent = clue;
+        clearHighlights();
+        getWordCells(clue).forEach(c => c.classList.add('highlight'));
+      });
+
+      cell.addEventListener('dblclick', () => {
+        const clues = cell.getAttribute('data-clues');
+        if (!clues) return;
+        const clueList = clues.split(',');
+        const current = lastClueIndex.get(cell) || 0;
+        const nextIndex = (current + 1) % clueList.length;
+        lastClueIndex.set(cell, nextIndex);
+        const clue = clueList[nextIndex];
+        currentDirection = currentDirection === 'across' ? 'down' : 'across';
+        clueBox.textContent = clue;
+        clearHighlights();
+        getWordCells(clue).forEach(c => c.classList.add('highlight'));
+      });
+
+      input.addEventListener('input', () => {
+        const clues = cell.getAttribute('data-clues');
+        if (!clues) return;
+        const clueList = clues.split(',');
+        const clue = clueList[lastClueIndex.get(cell) || 0];
+        const next = findNextCell(cell, currentDirection);
+        if (next) {
+          next.focus(); highlightActiveCell(next.parentElement);
+          highlightActiveCell(next.parentElement);
+        } else if (isWordComplete(clue)) {
+          checkFullCompletion();
+          jumpToNextWord(clue, currentDirection);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
